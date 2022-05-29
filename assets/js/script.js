@@ -14,6 +14,15 @@ const gameData = {
     score: 0
 };
 
+let highScore = [];
+
+if (!localStorage.getItem("highscore")) {
+    highScore = [];
+}
+else {
+    highScore = JSON.parse(localStorage.getItem("highscore"))
+}
+
 // Generate question object with right and wrong answers stored in object
 const questionObjGenerator = (question, rightAnswer, wrongAnswer1, wrongAnswer2, WrongAnswer3) => {
     const q =  {
@@ -193,8 +202,8 @@ const renderHighScores = () => {
     const highScoreList = document.createElement("ol");
 
     // TODO: dynamically retrieve list from local storage. for now using test list
-    const firstPlace = document.createElement("li");
-    const secondPlace = document.createElement("li");
+    // const firstPlace = document.createElement("li");
+    // const secondPlace = document.createElement("li");
 
     // Div to hold go back and clear high score buttons
     const buttonDiv = document.createElement("div");
@@ -204,8 +213,14 @@ const renderHighScores = () => {
 
     // Add content to elements created above
     highScoreTitle.innerText = "High Scores";
-    firstPlace.innerText = "JK";
-    secondPlace.innerText = "KM";
+
+    for (i = 0; i < highScore.length; i++) {
+        const listItem = document.createElement("li");
+        listItem.innerText = `${highScore[i][0]} - ${highScore[i][1]}`;
+        highScoreList.append(listItem);
+    }
+    // firstPlace.innerText = "JK";
+    // secondPlace.innerText = "KM";
 
     backButton.className = "high-score-button";
     backButton.id = "back-button";
@@ -220,7 +235,6 @@ const renderHighScores = () => {
     mainEl.append(highScoreTitle, highScoreList);
     mainEl.append(buttonDiv);
     buttonDiv.append(backButton, clearScores);
-    highScoreList.append(firstPlace, secondPlace);
 
 }
 
@@ -261,9 +275,30 @@ const clickHandlerMainEl = (event) => {
 
         endQuiz(gameData);
     }
-    // Submit score to local storage and renders high score
+
+    // Render high score. TODO: submit high scores to local storage
     else if (event.target.matches(".submit-score")) {
-        // TODO
+
+        // add user score and initials to high score list
+        const initials = document.querySelector("input[name='initials']").value;
+    
+        if (highScore.length > 0) {
+            for (let i = 0; i < highScore.length; i++) {
+                if (gameData.score > highScore[i][1]) {
+                    highScore.splice(i, 0, [initials, gameData.score])
+                    break;
+                }
+                else if (i === highScore.length - 1) {
+                    highScore.push([initials, gameData.score]);
+                    break;
+                }
+            }
+        }
+        else {
+            highScore.push([initials, gameData.score])
+        }
+
+        localStorage.setItem("highscore", JSON.stringify(highScore));
         renderHighScores();
     }
     // Takes user back to main page to restart quiz
@@ -308,6 +343,8 @@ const startQuiz = () => {
 
     // Add event listener for clicks in header element in DOM
     headerEl.addEventListener("click", clickHandlerHeaderEl);
+
+    // Check if there is a high score data object in local storage and retrieve it if there is one
 };
 
 const endQuiz = (gameData) => {
