@@ -11,7 +11,7 @@ let time = 10;
 const gameData = {
     initials: "",
     correctAnswers: 0,
-    score: 0,
+    score: 0
 };
 
 // Generate question object with right and wrong answers stored in object
@@ -95,6 +95,12 @@ const renderQuestion = (question) => {
     wrongAnswer1El.className = "answer";
     wrongAnswer2El.className = "answer";
     wrongAnswer3El.className = "answer";
+    
+    // Sets data attribute for right and wrong answers 
+    rightAnswerEl.setAttribute("data-answer", "correct");
+    wrongAnswer1El.setAttribute("data-answer", "incorrect");
+    wrongAnswer2El.setAttribute("data-answer", "incorrect");
+    wrongAnswer3El.setAttribute("data-answer", "incorrect");
 
     // cite: Fischer-Yates Shuffle https://bost.ocks.org/mike/shuffle/
     const shuffle = (array) => {
@@ -163,7 +169,7 @@ const renderEndQuiz = (gameData) => {
 
     // Add content to elements created above
     endTitle.innerText = "All Done!";
-    displayScore.innerText = "Your final score is 22"
+    displayScore.innerText = `Your final score is ${gameData.score}`
     
     scoreForm.innerHTML = "<label for='name'>Enter Initials:</label> <input type='text' name='initials' /> <button class='submit-score' type='button' >Submit</button>";
 
@@ -230,11 +236,29 @@ const clickHandlerMainEl = (event) => {
     }
     // Check target of click is answer and load next question
     else if (event.target.matches(".answer") && questionCounter < questionsArr.length) {
+        
         renderQuestion(questionsArr[questionCounter]);
+
+        // Add point for correct answers to game data object. If not true subtract 10 seconds from timer
+        if (event.target.getAttribute("data-answer") === "correct") {
+            gameData.correctAnswers ++;
+        }
+        else {
+            time -= 10;
+        }
     }
     // If end of question array reached, call endgame function when click event happens
-    else if (event.target.matches(".start-quiz-button") || event.target.matches(".answer") && questionCounter >= questionsArr.length) {
+    else if (event.target.matches(".answer") && questionCounter >= questionsArr.length) {
         clearInterval(timeInterval);
+
+        /// Add point for correct answers to game data object. If not true subtract 10 seconds from timer
+        if (event.target.getAttribute("data-answer") === "correct") {
+            gameData.correctAnswers ++;
+        }
+        else {
+            time -= 10;
+        }
+
         endQuiz(gameData);
     }
     // Submit score to local storage and renders high score
@@ -288,7 +312,12 @@ const startQuiz = () => {
 
 const endQuiz = (gameData) => {
     gameData.time = time;
+
+    // Calculate score when quiz ends
+    gameData.score = (gameData.correctAnswers * 7) + time;
+
     renderEndQuiz(gameData);
+    console.log(gameData)
 };
 
 startQuiz();
