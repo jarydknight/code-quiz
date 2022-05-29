@@ -76,25 +76,50 @@ const renderQuestion = (question) => {
     let answerContainer = document.createElement("div");
     let questionTitleEl = document.createElement("h2");
     let answerListEl = document.createElement("ol");
-    let firstAnswerEl = document.createElement("li");
-    let secondAnswerEl = document.createElement("li");
-    let thirdAnswerEl = document.createElement("li")
-    let fourthAnswerEl = document.createElement("li")
+    let rightAnswerEl = document.createElement("li");
+    let wrongAnswer1El = document.createElement("li");
+    let wrongAnswer2El = document.createElement("li")
+    let wrongAnswer3El = document.createElement("li")
 
     // Question put into h2 element
     questionTitleEl.innerText = question.question;
 
     // Answers put into li element
-    firstAnswerEl.innerText = question.rightAnswer;
-    secondAnswerEl.innerText = question.wrongAnswer1;
-    thirdAnswerEl.innerText = question.wrongAnswer2;
-    fourthAnswerEl.innerHTML = question.WrongAnswer3;
+    rightAnswerEl.innerText = question.rightAnswer;
+    wrongAnswer1El.innerText = question.wrongAnswer1;
+    wrongAnswer2El.innerText = question.wrongAnswer2;
+    wrongAnswer3El.innerHTML = question.WrongAnswer3;
 
     // Set class for answers
-    firstAnswerEl.className = "answer";
-    secondAnswerEl.className = "answer";
-    thirdAnswerEl.className = "answer";
-    fourthAnswerEl.className = "answer";
+    rightAnswerEl.className = "answer";
+    wrongAnswer1El.className = "answer";
+    wrongAnswer2El.className = "answer";
+    wrongAnswer3El.className = "answer";
+
+    // cite: Fischer-Yates Shuffle https://bost.ocks.org/mike/shuffle/
+    const shuffle = (array) => {
+        let currentIndex = array.length,  randomIndex;
+      
+        // While there remain elements to shuffle.
+        while (currentIndex != 0) {
+      
+          // Pick a remaining element.
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+      
+          // And swap it with the current element.
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+      
+        return array;
+      }
+
+    // Arrays used to hold question elements. the second array is put into random order then used to render questions on screen
+    let questionElArr = [rightAnswerEl, wrongAnswer1El, wrongAnswer2El, wrongAnswer3El];
+    let randomOrderQuestionArr = shuffle(questionElArr)
+    
+    console.log(randomOrderQuestionArr)
 
     // Clears child elements from main
     mainEl.innerHTML = "";
@@ -112,7 +137,10 @@ const renderQuestion = (question) => {
     answerContainer.append(answerListEl);
 
     // Append answers (li) to ol element
-    answerListEl.append(firstAnswerEl, secondAnswerEl, thirdAnswerEl, fourthAnswerEl);
+    for (let i = 0; i < randomOrderQuestionArr.length; i++) {
+        answerListEl.append(randomOrderQuestionArr[i])
+        console.log(randomOrderQuestionArr[i].innerText)
+    }
 
     questionCounter ++;
 
@@ -196,7 +224,7 @@ const clickHandlerMainEl = (event) => {
     // Check the target of the click event, load next question, and start timer
     if (event.target.matches(".start-quiz-button") && questionCounter < questionsArr.length) {
         //give time a value again so that if the game is restarted the variable is reset
-        time = 10
+        time = 60
         renderQuestion(questionsArr[questionCounter]);
         timeInterval = setInterval(countdown, 1000);
     }
@@ -205,7 +233,8 @@ const clickHandlerMainEl = (event) => {
         renderQuestion(questionsArr[questionCounter]);
     }
     // If end of question array reached, call endgame function when click event happens
-    else if (event.target.matches(".start-quiz-button") || event.target.matches("li") && questionCounter >= questionsArr.length) {
+    else if (event.target.matches(".start-quiz-button") || event.target.matches(".answer") && questionCounter >= questionsArr.length) {
+        clearInterval(timeInterval);
         endQuiz(gameData);
     }
     // Submit score to local storage and renders high score
@@ -258,6 +287,7 @@ const startQuiz = () => {
 };
 
 const endQuiz = (gameData) => {
+    gameData.time = time;
     renderEndQuiz(gameData);
 };
 
