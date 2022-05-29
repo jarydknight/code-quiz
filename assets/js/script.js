@@ -5,7 +5,7 @@ let questionsArr = [];
 let questionCounter = 0;
 
 //starting amount of time given to complete quiz
-let time = 10;
+let time = 60;
 
 //object created to keep track of game data to be passed to end game function
 const gameData = {
@@ -188,6 +188,16 @@ const renderEndQuiz = (gameData) => {
 }
 
 const renderHighScores = () => {
+    // Stops timer if high scores are viewed during game
+    clearInterval(timeInterval);
+    
+    // Gets high scores from local storage. Needs to be done again incase high scores are cleared
+    if (!localStorage.getItem("highscore")) {
+        highScore = [];
+    }
+    else {
+        highScore = JSON.parse(localStorage.getItem("highscore"))
+    }
 
     // select main element from DOM
     const mainEl = document.querySelector("main");
@@ -200,10 +210,6 @@ const renderHighScores = () => {
 
     //High score list
     const highScoreList = document.createElement("ol");
-
-    // TODO: dynamically retrieve list from local storage. for now using test list
-    // const firstPlace = document.createElement("li");
-    // const secondPlace = document.createElement("li");
 
     // Div to hold go back and clear high score buttons
     const buttonDiv = document.createElement("div");
@@ -219,8 +225,6 @@ const renderHighScores = () => {
         listItem.innerText = `${highScore[i][0]} - ${highScore[i][1]}`;
         highScoreList.append(listItem);
     }
-    // firstPlace.innerText = "JK";
-    // secondPlace.innerText = "KM";
 
     backButton.className = "high-score-button";
     backButton.id = "back-button";
@@ -276,7 +280,7 @@ const clickHandlerMainEl = (event) => {
         endQuiz(gameData);
     }
 
-    // Render high score. TODO: submit high scores to local storage
+    // Render high score and submit high scores to local storage
     else if (event.target.matches(".submit-score")) {
 
         // add user score and initials to high score list
@@ -309,12 +313,13 @@ const clickHandlerMainEl = (event) => {
     }
     // Clears high scores from local storage
     else if (event.target.matches("#clear-high-scores")) {
-        //TODO: clear high scores from local storage
+        localStorage.clear();
+        renderHighScores();
     }
 
 }
 
-const clickHandlerHeaderEl =(event) => {
+const clickHandlerHeaderEl = (event) => {
     if (event.target.matches(".view-high-scores")) {
         renderHighScores()
     }
