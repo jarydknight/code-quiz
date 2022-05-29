@@ -4,6 +4,9 @@ let questionsArr = [];
 // Question counter to move through questions array
 let questionCounter = 0;
 
+//starting amount of time given to complete quiz
+let time = 10;
+
 //object created to keep track of game data to be passed to end game function
 const gameData = {
     initials: "",
@@ -22,6 +25,23 @@ const questionObjGenerator = (question, rightAnswer, wrongAnswer1, wrongAnswer2,
     };
 
     questionsArr.push(q);
+};
+
+// Countdown timer
+let timeInterval;
+const countdown = () => {
+    if (time < 0) {
+
+        clearInterval(timeInterval);
+        // When timer reaches 0 game ends
+        endQuiz(gameData);
+    }
+    else {
+        const timer = document.querySelector(".timer");
+        timer.innerText = `Time: ${time}`
+        time --;
+    }
+  
 };
 
 // Renders main display
@@ -100,7 +120,7 @@ const renderQuestion = (question) => {
 
 const renderEndQuiz = (gameData) => {
 
-    event.preventDefault();
+    // event.preventDefault();
     
     // Select main element in DOM
     const mainEl = document.querySelector("main");
@@ -173,9 +193,16 @@ const renderHighScores = () => {
 // Handles click events in the main element
 const clickHandlerMainEl = (event) => {
 
-    // Check the target of the click event and load next question
-    if (event.target.matches(".start-quiz-button") || event.target.matches(".answer") && questionCounter < questionsArr.length) {
-        renderQuestion(questionsArr[questionCounter])
+    // Check the target of the click event, load next question, and start timer
+    if (event.target.matches(".start-quiz-button") && questionCounter < questionsArr.length) {
+        //give time a value again so that if the game is restarted the variable is reset
+        time = 10
+        renderQuestion(questionsArr[questionCounter]);
+        timeInterval = setInterval(countdown, 1000);
+    }
+    // Check target of click is answer and load next question
+    else if (event.target.matches(".answer") && questionCounter < questionsArr.length) {
+        renderQuestion(questionsArr[questionCounter]);
     }
     // If end of question array reached, call endgame function when click event happens
     else if (event.target.matches(".start-quiz-button") || event.target.matches("li") && questionCounter >= questionsArr.length) {
