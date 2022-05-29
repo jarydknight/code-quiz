@@ -52,7 +52,7 @@ p {
     color: var(--primary-color);
 }
 
-button.start-quiz {
+button.start-quiz-button {
     background-color: var(--primary-color);
 
     color: white;
