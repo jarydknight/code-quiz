@@ -161,9 +161,8 @@ const renderQuestion = (question) => {
 
 };
 
+// Function to render end of quiz elements
 const renderEndQuiz = (gameData) => {
-
-    // event.preventDefault();
     
     // Select main element in DOM
     const mainEl = document.querySelector("main");
