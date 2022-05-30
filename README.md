@@ -32,6 +32,10 @@ The purpose of this project is create a Javascript code quiz game to demonstrate
 
 ## Webpage Demo
 
-Link to webpage: [**Password Generator**]()
+Link to webpage: [**Code Quiz**](https://jarydknight.github.io/code-quiz/)
 
-![screenshot of webpage]()
+![screenshot of webpage](./assets/images/jarydknight.github.io_code-quiz_.png)
+
+![screenshot of webpage](./assets/images/jarydknight.github.io_code-quiz_%20(1).png)
+
+![screenshot of webpage](./assets/images/jarydknight.github.io_code-quiz_%20(2).png)
