@@ -10,6 +10,12 @@
 
 :root {
     --primary-color: blueviolet;
+
+    --secondary-color: silver;
+
+    --tertiary-color: black;
+
+    --qautenary-color: white;
 }
 
 html {
@@ -50,6 +56,11 @@ p {
 
 .view-high-scores a{
     color: var(--primary-color);
+
+}
+
+.view-high-scores:hover {
+    color: var(--primary-color);
 }
 
 button.start-quiz-button {
@@ -63,9 +74,84 @@ button.start-quiz-button {
 
     border-radius: 25%;
 }
+/* ol element for questions */
+.answer-list {
+    text-align: center;
 
-/* main div {
+    list-style: none;
+}
+
+/* li element for questions */
+.answer {
+    border-radius: 10%;
+
+    background-color: var(--secondary-color);
+
+    color: var(--tertiary-color);
+
+    margin: 20px;
+
+    font-size: 20px;
+
+}
+
+.answer:hover {
+    background-color: var(--primary-color);
+
+    color: var(--qautenary-color);
+}
+
+button.submit-score {
+    background-color: var(--primary-color);
+
+    color: white;
+
+    width: 100px;
+
+    height: 30px;
+
+    border-radius: 25%;
+
+}
+
+button.high-score-button {
+    background-color: var(--primary-color);
+
+    color: white;
+
+    width: 100px;
+
+    height: 30px;
+
+    border-radius: 25%;
+
+}
+
+.high-score-button-div {
     display: flex;
 
-    flex-wrap: wrap;
-} */
+    justify-content: space-around;
+
+    align-items: center;
+
+    margin: 30px;
+
+}
+
+.high-score-list-element {
+    margin: 20px;
+
+    font-size: 20px;
+}
+
+.high-score-list {
+    text-align: center;
+}
+
+[data-grade="correct"] {
+    color: green;
+}
+
+[data-grade="incorrect"] {
+    color: red;
+}

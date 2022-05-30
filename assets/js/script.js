@@ -84,7 +84,7 @@ const renderQuestion = (question) => {
     let questionContainer = document.createElement("div");
     let answerContainer = document.createElement("div");
     let questionTitleEl = document.createElement("h2");
-    let answerListEl = document.createElement("ol");
+    let answerListEl = document.createElement("ul");
     let rightAnswerEl = document.createElement("li");
     let wrongAnswer1El = document.createElement("li");
     let wrongAnswer2El = document.createElement("li")
@@ -99,11 +99,14 @@ const renderQuestion = (question) => {
     wrongAnswer2El.innerText = question.wrongAnswer2;
     wrongAnswer3El.innerHTML = question.WrongAnswer3;
 
-    // Set class for answers
+    // Set class for answer elements
     rightAnswerEl.className = "answer";
     wrongAnswer1El.className = "answer";
     wrongAnswer2El.className = "answer";
     wrongAnswer3El.className = "answer";
+
+    // Set class for ol element
+    answerListEl.className = "answer-list";
     
     // Sets data attribute for right and wrong answers 
     rightAnswerEl.setAttribute("data-answer", "correct");
@@ -133,8 +136,6 @@ const renderQuestion = (question) => {
     // Arrays used to hold question elements. the second array is put into random order then used to render questions on screen
     let questionElArr = [rightAnswerEl, wrongAnswer1El, wrongAnswer2El, wrongAnswer3El];
     let randomOrderQuestionArr = shuffle(questionElArr)
-    
-    console.log(randomOrderQuestionArr)
 
     // Clears child elements from main
     mainEl.innerHTML = "";
@@ -154,7 +155,6 @@ const renderQuestion = (question) => {
     // Append answers (li) to ol element
     for (let i = 0; i < randomOrderQuestionArr.length; i++) {
         answerListEl.append(randomOrderQuestionArr[i])
-        console.log(randomOrderQuestionArr[i].innerText)
     }
 
     questionCounter ++;
@@ -187,6 +187,7 @@ const renderEndQuiz = (gameData) => {
 
 }
 
+// Function to render high scores elements
 const renderHighScores = () => {
     // Stops timer if high scores are viewed during game
     clearInterval(timeInterval);
@@ -211,10 +212,16 @@ const renderHighScores = () => {
     //High score list
     const highScoreList = document.createElement("ol");
 
+    // Give class to high score ol element
+    highScoreList.className = "high-score-list"
+
     // Div to hold go back and clear high score buttons
     const buttonDiv = document.createElement("div");
     const backButton = document.createElement("button")
     const clearScores = document.createElement("button");
+
+    // Give button div class for styling
+    buttonDiv.className = "high-score-button-div";
 
 
     // Add content to elements created above
@@ -223,6 +230,7 @@ const renderHighScores = () => {
     for (i = 0; i < highScore.length; i++) {
         const listItem = document.createElement("li");
         listItem.innerText = `${highScore[i][0]} - ${highScore[i][1]}`;
+        listItem.className = "high-score-list-element"
         highScoreList.append(listItem);
     }
 
@@ -242,6 +250,21 @@ const renderHighScores = () => {
 
 }
 
+// Function to alert users if they got answer right
+const correctAnswerAlert = () => {
+    const mainEl = document.querySelector("main");
+    mainEl.innerText = "";
+    mainEl.innerHTML = "<h2 data-grade='correct'>CORRECT!</h2>";
+}
+
+// Function to alert users if they got answer wrong
+const incorrectAnswerAlert = () => {
+    const mainEl = document.querySelector("main");
+    mainEl.innerText = "";
+    mainEl.innerHTML = "<h2 data-grade='incorrect'>INCORRECT!</h2>";
+}
+
+
 // Handles click events in the main element
 const clickHandlerMainEl = (event) => {
 
@@ -254,15 +277,22 @@ const clickHandlerMainEl = (event) => {
     }
     // Check target of click is answer and load next question
     else if (event.target.matches(".answer") && questionCounter < questionsArr.length) {
-        
-        renderQuestion(questionsArr[questionCounter]);
 
         // Add point for correct answers to game data object. If not true subtract 10 seconds from timer
         if (event.target.getAttribute("data-answer") === "correct") {
+
             gameData.correctAnswers ++;
+
+            // Render alert to show users if they got answer right
+            correctAnswerAlert();
+            setTimeout(function () {renderQuestion(questionsArr[questionCounter]);}, 2000);
         }
         else {
+
             time -= 10;
+            // Render alert to show users if they got answer wrong
+            incorrectAnswerAlert();
+            setTimeout(function () {renderQuestion(questionsArr[questionCounter]);}, 2000);
         }
     }
     // If end of question array reached, call endgame function when click event happens
@@ -272,12 +302,18 @@ const clickHandlerMainEl = (event) => {
         /// Add point for correct answers to game data object. If not true subtract 10 seconds from timer
         if (event.target.getAttribute("data-answer") === "correct") {
             gameData.correctAnswers ++;
+
+            // Render alert to show users if they got answer right
+            correctAnswerAlert();
+            setTimeout(function () {endQuiz(gameData);}, 1000);
         }
         else {
             time -= 10;
-        }
 
-        endQuiz(gameData);
+            // Render alert to show users if they got answer wrong
+            incorrectAnswerAlert();
+            setTimeout(function () {endQuiz(gameData);}, 1000);
+        }
     }
 
     // Render high score and submit high scores to local storage
@@ -286,12 +322,14 @@ const clickHandlerMainEl = (event) => {
         // add user score and initials to high score list
         const initials = document.querySelector("input[name='initials']").value;
     
+        // Put high score elements in order of highest to lowest score
         if (highScore.length > 0) {
             for (let i = 0; i < highScore.length; i++) {
                 if (gameData.score > highScore[i][1]) {
                     highScore.splice(i, 0, [initials, gameData.score])
                     break;
                 }
+                // Indicates that we iterated to the last item in the high score list and the user score should be added below this score
                 else if (i === highScore.length - 1) {
                     highScore.push([initials, gameData.score]);
                     break;
@@ -352,14 +390,19 @@ const startQuiz = () => {
     // Check if there is a high score data object in local storage and retrieve it if there is one
 };
 
+// Function called run run end game procedures
 const endQuiz = (gameData) => {
     gameData.time = time;
 
-    // Calculate score when quiz ends
-    gameData.score = (gameData.correctAnswers * 7) + time;
+    // Calculate score when quiz ends. If time runs out and no quesiton answered score will be -1. this ensure that score does not go below zero
+    if (gameData.score < 0) {
+        gameData.score = 0;
+    }
+    else {
+        gameData.score = (gameData.correctAnswers * 7) + time;
+    }
 
     renderEndQuiz(gameData);
-    console.log(gameData)
 };
 
 startQuiz();
