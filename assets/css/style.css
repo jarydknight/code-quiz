@@ -42,18 +42,26 @@ main {
     text-align: center;
 }
 
-a {
-    text-decoration: none;
-
-    color: black;
-}
-
 h1 {
     margin: 20px;
 }
 
+h2 {
+    margin: 40px;
+}
+
+h3 {
+    margin: 40px;
+}
+
 p {
     margin: 20px;
+
+    font-size: 20px;
+}
+
+label {
+    font-size: 20px;
 }
 
 /* || MAIN PAGE STYLES */
@@ -77,6 +85,8 @@ button.start-quiz-button {
     height: 50px;
 
     border-radius: 10%;
+
+    font-size: 18px;
 }
 /* ol element for questions */
 .answer-list {
@@ -116,6 +126,7 @@ button.submit-score {
 
     border-radius: 10%;
 
+    font-size: 22px;
 }
 
 button.high-score-button {
@@ -128,6 +139,8 @@ button.high-score-button {
     height: 30px;
 
     border-radius: 10%;
+    
+    font-size: 22px;
 
 }
 
