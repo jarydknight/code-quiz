@@ -26,7 +26,7 @@ The purpose of this project is create a Javascript code quiz game to demonstrate
 ## Setup
 
 * To run this project clone the repository and open in your prefered code editor. Open index.html in your browser.
-* Click generate password button and follow prompts and the application will generate a password.
+* Click the start quiz button and follow prompts and the application will generate a password.
 
 ---
 

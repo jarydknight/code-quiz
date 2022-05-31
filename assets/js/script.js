@@ -9,7 +9,6 @@ let time = 60;
 
 //object created to keep track of game data to be passed to end game function
 const gameData = {
-    initials: "",
     correctAnswers: 0,
     score: 0
 };
@@ -24,13 +23,13 @@ else {
 }
 
 // Generate question object with right and wrong answers stored in object
-const questionObjGenerator = (question, rightAnswer, wrongAnswer1, wrongAnswer2, WrongAnswer3) => {
+const questionObjGenerator = (question, rightAnswer, wrongAnswer1, wrongAnswer2, wrongAnswer3) => {
     const q =  {
         question: question,
         rightAnswer: rightAnswer,
         wrongAnswer1: wrongAnswer1,
         wrongAnswer2: wrongAnswer2,
-        WrongAnswer3: WrongAnswer3
+        wrongAnswer3: wrongAnswer3
     };
 
     questionsArr.push(q);
@@ -39,18 +38,28 @@ const questionObjGenerator = (question, rightAnswer, wrongAnswer1, wrongAnswer2,
 // Countdown timer
 let timeInterval;
 const countdown = () => {
-    if (time < 0) {
 
+    const timer = document.querySelector(".timer");
+
+    if (time > 0) {
+        timer.innerText = `Time: ${time}`;
+        time --;
+    }
+    else {
+        timer.innerText = `Time: ${time}`;
         clearInterval(timeInterval);
         // When timer reaches 0 game ends
         endQuiz(gameData);
     }
-    else {
-        const timer = document.querySelector(".timer");
-        timer.innerText = `Time: ${time}`
-        time --;
-    }
   
+};
+
+// Function to clear values stored in game data object
+const clearGameData = () => {
+    // Clears values from game data object at end of game so that when a new game is started the old stats are not tracked
+    gameData.score = 0;
+    gameData.correctAnswers = 0;
+    gameData.time = 0;
 };
 
 // Renders main display
@@ -97,7 +106,7 @@ const renderQuestion = (question) => {
     rightAnswerEl.innerText = question.rightAnswer;
     wrongAnswer1El.innerText = question.wrongAnswer1;
     wrongAnswer2El.innerText = question.wrongAnswer2;
-    wrongAnswer3El.innerHTML = question.WrongAnswer3;
+    wrongAnswer3El.innerHTML = question.wrongAnswer3;
 
     // Set class for answer elements
     rightAnswerEl.className = "answer";
@@ -341,6 +350,9 @@ const clickHandlerMainEl = (event) => {
 
         localStorage.setItem("highscore", JSON.stringify(highScore));
         renderHighScores();
+
+        // Clear game data after score is saved in local storage
+        clearGameData();
     }
     // Takes user back to main page to restart quiz
     else if (event.target.matches("#back-button")) {
@@ -394,12 +406,8 @@ const endQuiz = (gameData) => {
     gameData.time = time;
 
     // Calculate score when quiz ends. If time runs out and no quesiton answered score will be -1. this ensure that score does not go below zero
-    if (gameData.score < 0) {
-        gameData.score = 0;
-    }
-    else {
-        gameData.score = (gameData.correctAnswers * 7) + time;
-    }
+    
+    gameData.score = (gameData.correctAnswers * 7) + time;
 
     renderEndQuiz(gameData);
 };
