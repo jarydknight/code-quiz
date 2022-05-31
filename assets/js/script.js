@@ -7,8 +7,11 @@ let questionCounter = 0;
 //starting amount of time given to complete quiz
 let time = 60;
 
+// Select header element in DOM
+const headerEl = document.querySelector("header");
+
 // Main element saved in variable to be targeted when rendering html content
-mainEl = document.querySelector("main");
+const mainEl = document.querySelector("main");
 
 // Timer element saved in variable to be targeted for rendering countdown timer
 const timerEl = document.querySelector(".timer");
@@ -23,11 +26,41 @@ const gameData = {
 let highScore = [];
 
 // Load high scores from local storage and update high score array if there is data saved in local storage
-if (!localStorage.getItem("highscore")) {
-    highScore = [];
+const getHighScores = () => {
+    if (!localStorage.getItem("highscore")) {
+        highScore = [];
+    }
+    else {
+        highScore = JSON.parse(localStorage.getItem("highscore"));
+    }
 }
-else {
-    highScore = JSON.parse(localStorage.getItem("highscore"));
+
+// Function to save highscores to local storage
+const setHighScores = () => {
+    localStorage.setItem("highscore", JSON.stringify(highScore));
+}
+
+const sortHighScores = () => {
+    // add user score and initials to high score list
+    const initials = document.querySelector("input[name='initials']").value;
+    
+    // Put high score elements in order of highest to lowest score
+    if (highScore.length > 0) {
+        for (let i = 0; i < highScore.length; i++) {
+            if (gameData.score > highScore[i][1]) {
+                highScore.splice(i, 0, [initials, gameData.score])
+                break;
+            }
+            // Indicates that we iterated to the last item in the high score list and the user score should be added below this score
+            else if (i === highScore.length - 1) {
+                highScore.push([initials, gameData.score]);
+                break;
+            }
+        }
+    }
+    else {
+        highScore.push([initials, gameData.score])
+    }
 }
 
 // Generate question object with right and wrong answers stored in object
@@ -208,12 +241,7 @@ const renderHighScores = () => {
     clearInterval(timeInterval);
     
     // Gets high scores from local storage. Needs to be done again incase high scores are cleared
-    if (!localStorage.getItem("highscore")) {
-        highScore = [];
-    }
-    else {
-        highScore = JSON.parse(localStorage.getItem("highscore"))
-    }
+    getHighScores();
 
     // Clear child contents of main element
     mainEl.innerText = "";
@@ -282,6 +310,7 @@ const clickHandlerMainEl = (event) => {
         // Add point for correct answers to game data object. If not true subtract 10 seconds from timer
         if (event.target.getAttribute("data-answer") === "correct") {
 
+            // Add a point for correct answers
             gameData.correctAnswers ++;
 
             // Render alert to show users if they got answer right
@@ -320,31 +349,13 @@ const clickHandlerMainEl = (event) => {
     // Render high score and submit high scores to local storage
     else if (event.target.matches(".submit-score")) {
 
-        // add user score and initials to high score list
-        const initials = document.querySelector("input[name='initials']").value;
-    
-        // Put high score elements in order of highest to lowest score
-        if (highScore.length > 0) {
-            for (let i = 0; i < highScore.length; i++) {
-                if (gameData.score > highScore[i][1]) {
-                    highScore.splice(i, 0, [initials, gameData.score])
-                    break;
-                }
-                // Indicates that we iterated to the last item in the high score list and the user score should be added below this score
-                else if (i === highScore.length - 1) {
-                    highScore.push([initials, gameData.score]);
-                    break;
-                }
-            }
-        }
-        else {
-            highScore.push([initials, gameData.score])
-        }
+        sortHighScores();
 
-        localStorage.setItem("highscore", JSON.stringify(highScore));
+        setHighScores();
+
         renderHighScores();
 
-        // Clear game data after score is saved in local storage
+        // Clear game data after score is saved in local storage so that new game starts with fresh stats
         clearGameData();
     }
     // Takes user back to main page to restart quiz
@@ -381,9 +392,6 @@ const startQuiz = () => {
 
     questionObjGenerator("A very useful tool used during development and debugging for printing content to the debugger is:", "console.log", "Javascript", "terminal/bash", "for loops");
 
-    // Select header element in DOM
-    const headerEl = document.querySelector("header");
-
     // Add event listener to main elementto listen for button clicks
     mainEl.addEventListener("click", clickHandlerMainEl)
 
@@ -400,7 +408,6 @@ const endQuiz = (gameData) => {
     timerEl.innerText = `Time: ${time}`;
 
     // Calculate score when quiz ends. If time runs out and no quesiton answered score will be -1. this ensure that score does not go below zero
-    
     gameData.score = (gameData.correctAnswers * 7) + time;
 
     renderEndQuiz(gameData);
