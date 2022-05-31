@@ -7,19 +7,27 @@ let questionCounter = 0;
 //starting amount of time given to complete quiz
 let time = 60;
 
+// Main element saved in variable to be targeted when rendering html content
+mainEl = document.querySelector("main");
+
+// Timer element saved in variable to be targeted for rendering countdown timer
+const timerEl = document.querySelector(".timer");
+
 //object created to keep track of game data to be passed to end game function
 const gameData = {
     correctAnswers: 0,
     score: 0
 };
 
+// Array that holds high scores. 
 let highScore = [];
 
+// Load high scores from local storage and update high score array if there is data saved in local storage
 if (!localStorage.getItem("highscore")) {
     highScore = [];
 }
 else {
-    highScore = JSON.parse(localStorage.getItem("highscore"))
+    highScore = JSON.parse(localStorage.getItem("highscore"));
 }
 
 // Generate question object with right and wrong answers stored in object
@@ -39,20 +47,30 @@ const questionObjGenerator = (question, rightAnswer, wrongAnswer1, wrongAnswer2,
 let timeInterval;
 const countdown = () => {
 
-    const timer = document.querySelector(".timer");
-
     if (time > 0) {
-        timer.innerText = `Time: ${time}`;
+        timerEl.innerText = `Time: ${time}`;
         time --;
     }
     else {
-        timer.innerText = `Time: ${time}`;
+        timerEl.innerText = `Time: ${time}`;
         clearInterval(timeInterval);
         // When timer reaches 0 game ends
         endQuiz(gameData);
     }
   
 };
+
+// Function to alert users if they got answer right
+const correctAnswerAlert = () => {
+    mainEl.innerText = "";
+    mainEl.innerHTML = "<h2 data-grade='correct'>CORRECT!</h2>";
+}
+
+// Function to alert users if they got answer wrong
+const incorrectAnswerAlert = () => {
+    mainEl.innerText = "";
+    mainEl.innerHTML = "<h2 data-grade='incorrect'>INCORRECT!</h2>";
+}
 
 // Function to clear values stored in game data object
 const clearGameData = () => {
@@ -64,8 +82,6 @@ const clearGameData = () => {
 
 // Renders main display
 const renderMainPage = () => {
-    mainEl = document.querySelector("main");
-
     // Clear child contents of main element in DOM
     mainEl.innerText = "";
 
@@ -82,13 +98,11 @@ const renderMainPage = () => {
     startButton.type = "button";
 
     mainEl.append(mainTitle, instructions, startButton);
+   
 }
 
 // Function to render question page on screen
 const renderQuestion = (question) => {
-    // Get main DOM element
-    const mainEl = document.querySelector("main");
-    
     // Create html elements for question content
     let questionContainer = document.createElement("div");
     let answerContainer = document.createElement("div");
@@ -106,7 +120,7 @@ const renderQuestion = (question) => {
     rightAnswerEl.innerText = question.rightAnswer;
     wrongAnswer1El.innerText = question.wrongAnswer1;
     wrongAnswer2El.innerText = question.wrongAnswer2;
-    wrongAnswer3El.innerHTML = question.wrongAnswer3;
+    wrongAnswer3El.innerText = question.wrongAnswer3;
 
     // Set class for answer elements
     rightAnswerEl.className = "answer";
@@ -150,13 +164,10 @@ const renderQuestion = (question) => {
     mainEl.innerHTML = "";
 
     // Append question div to main element
-    mainEl.append(questionContainer);
+    mainEl.append(questionContainer, answerContainer);
 
     // Append question to question div
     questionContainer.append(questionTitleEl);
-
-    // Append answer container to main element
-    mainEl.append(answerContainer);
 
     // Append list to answer container
     answerContainer.append(answerListEl);
@@ -172,10 +183,6 @@ const renderQuestion = (question) => {
 
 // Function to render end of quiz elements
 const renderEndQuiz = (gameData) => {
-    
-    // Select main element in DOM
-    const mainEl = document.querySelector("main");
-
     // Clear all child objects in the main element
     mainEl.innerText = "";
 
@@ -208,9 +215,6 @@ const renderHighScores = () => {
         highScore = JSON.parse(localStorage.getItem("highscore"))
     }
 
-    // select main element from DOM
-    const mainEl = document.querySelector("main");
-
     // Clear child contents of main element
     mainEl.innerText = "";
 
@@ -235,6 +239,19 @@ const renderHighScores = () => {
     // Add content to elements created above
     highScoreTitle.innerText = "High Scores";
 
+    // Add class, id, tyoe and inner text to back button
+    backButton.className = "high-score-button";
+    backButton.id = "back-button";
+    backButton.type = "button";
+    backButton.innerText = "Back"
+
+    // Add class, id, tyoe and inner text to clear scores button
+    clearScores.className = "high-score-button";
+    clearScores.id = "clear-high-scores";
+    clearScores.type = "button";
+    clearScores.innerText = "Clear High Scores"
+
+    // Appends high scores from array to li elements to be rendered
     for (i = 0; i < highScore.length; i++) {
         const listItem = document.createElement("li");
         listItem.innerText = `${highScore[i][0]} - ${highScore[i][1]}`;
@@ -242,36 +259,12 @@ const renderHighScores = () => {
         highScoreList.append(listItem);
     }
 
-    backButton.className = "high-score-button";
-    backButton.id = "back-button";
-    backButton.type = "button";
-    backButton.innerText = "Back"
-
-    clearScores.className = "high-score-button";
-    clearScores.id = "clear-high-scores";
-    clearScores.type = "button";
-    clearScores.innerText = "Clear High Scores"
-
+    // Append elements created above to main element
     mainEl.append(highScoreTitle, highScoreList);
     mainEl.append(buttonDiv);
     buttonDiv.append(backButton, clearScores);
 
 }
-
-// Function to alert users if they got answer right
-const correctAnswerAlert = () => {
-    const mainEl = document.querySelector("main");
-    mainEl.innerText = "";
-    mainEl.innerHTML = "<h2 data-grade='correct'>CORRECT!</h2>";
-}
-
-// Function to alert users if they got answer wrong
-const incorrectAnswerAlert = () => {
-    const mainEl = document.querySelector("main");
-    mainEl.innerText = "";
-    mainEl.innerHTML = "<h2 data-grade='incorrect'>INCORRECT!</h2>";
-}
-
 
 // Handles click events in the main element
 const clickHandlerMainEl = (event) => {
@@ -370,7 +363,7 @@ const clickHandlerMainEl = (event) => {
 
 const clickHandlerHeaderEl = (event) => {
     if (event.target.matches(".view-high-scores")) {
-        renderHighScores()
+        renderHighScores();
     }
 }
 
@@ -386,8 +379,7 @@ const startQuiz = () => {
 
     questionObjGenerator("String values must be enclosed withing _____ when being assigned to variables", "quotes", "commas", "curly brackets", "paranthesis");
 
-    // Select main element in DOM
-    const mainEl = document.querySelector("main");
+    questionObjGenerator("A very useful tool used during development and debugging for printing content to the debugger is:", "console.log", "Javascript", "terminal/bash", "for loops");
 
     // Select header element in DOM
     const headerEl = document.querySelector("header");
@@ -398,12 +390,14 @@ const startQuiz = () => {
     // Add event listener for clicks in header element in DOM
     headerEl.addEventListener("click", clickHandlerHeaderEl);
 
-    // Check if there is a high score data object in local storage and retrieve it if there is one
 };
 
 // Function called run run end game procedures
 const endQuiz = (gameData) => {
     gameData.time = time;
+    
+    // Update timer once more when game ends 
+    timerEl.innerText = `Time: ${time}`;
 
     // Calculate score when quiz ends. If time runs out and no quesiton answered score will be -1. this ensure that score does not go below zero
     
