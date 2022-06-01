@@ -319,7 +319,8 @@ const clickHandlerMainEl = (event) => {
         }
         else {
 
-            time -= 10;
+            // subtract 10 seconds from time if it won't bring time below 0. if it will then set time to 0
+            time = time - 10 >= 0 ? time -= 10 : 0;
             // Render alert to show users if they got answer wrong
             incorrectAnswerAlert();
             setTimeout(function () {renderQuestion(questionsArr[questionCounter]);}, 2000);
@@ -338,7 +339,8 @@ const clickHandlerMainEl = (event) => {
             setTimeout(function () {endQuiz(gameData);}, 1000);
         }
         else {
-            time -= 10;
+            // subtract 10 seconds from time if it won't bring time below 0. if it will then set time to 0
+            time = time - 10 >= 0 ? time -= 10 : 0;
 
             // Render alert to show users if they got answer wrong
             incorrectAnswerAlert();
@@ -407,8 +409,8 @@ const endQuiz = (gameData) => {
     // Update timer once more when game ends 
     timerEl.innerText = `Time: ${time}`;
 
-    // Calculate score when quiz ends. If time runs out and no quesiton answered score will be -1. this ensure that score does not go below zero
-    gameData.score = (gameData.correctAnswers * 7) + time;
+    // Calculate score when quiz ends. 
+    gameData.score = (gameData.correctAnswers * 7) + time > 0 ? (gameData.correctAnswers * 7) + time : 0;
 
     renderEndQuiz(gameData);
 };
