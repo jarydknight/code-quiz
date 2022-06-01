@@ -299,6 +299,10 @@ const clickHandlerMainEl = (event) => {
 
     // Check the target of the click event, load next question, and start timer
     if (event.target.matches(".start-quiz-button") && questionCounter < questionsArr.length) {
+
+        // Clear game data after score is saved in local storage so that new game starts with fresh stats
+        clearGameData();
+
         //give time a value again so that if the game is restarted the variable is reset
         time = 60
         renderQuestion(questionsArr[questionCounter]);
@@ -357,8 +361,6 @@ const clickHandlerMainEl = (event) => {
 
         renderHighScores();
 
-        // Clear game data after score is saved in local storage so that new game starts with fresh stats
-        clearGameData();
     }
     // Takes user back to main page to restart quiz
     else if (event.target.matches("#back-button")) {
