@@ -370,7 +370,7 @@ const clickHandlerMainEl = (event) => {
     }
     // Clears high scores from local storage
     else if (event.target.matches("#clear-high-scores")) {
-        localStorage.clear();
+        localStorage.removeItem("highscore");
         renderHighScores();
     }
 
