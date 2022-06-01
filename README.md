@@ -11,7 +11,7 @@
 
 ## Description
 
-The purpose of this project is create a Javascript code quiz game to demonstrate my Javascript Skills ans Web API skills.
+The purpose of this project is create a Javascript code quiz game to demonstrate my Javascript Skills and Web API skills.
 
 ---
 
