@@ -409,7 +409,7 @@ const endQuiz = (gameData) => {
     // Update timer once more when game ends 
     timerEl.innerText = `Time: ${time}`;
 
-    // Calculate score when quiz ends. If time runs out and no quesiton answered score will be -1. this ensure that score does not go below zero
+    // Calculate score when quiz ends. 
     gameData.score = (gameData.correctAnswers * 7) + time > 0 ? (gameData.correctAnswers * 7) + time : 0;
 
     renderEndQuiz(gameData);
